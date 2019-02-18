@@ -4,16 +4,44 @@ write down the Facts and Rules to model the game state
 shown as the follows:
 
  y\\x   pos1     pos2     pos3
-     ----------------------------
-pos1 | tile1  | tile2  | tile3  |
-     ----------------------------
-pos2 | tile8  | empty  | tile4  |
-     ----------------------------
-pos3 | tile7  | tile6  | tile5  |
-     ----------------------------
+     ┌────────┬────────┬────────┐
+pos1 │ tile1  │ tile2  │ tile3  │
+     ├────────┼────────┼────────┤
+pos2 │ tile8  │ empty  │ tile4  │
+     ├────────┼────────┼────────┤
+pos3 │ tile7  │ tile6  │ tile5  │
+     └────────┴────────┴────────┘
 
 Example: 
 fact: (pred obj1 obj2)
 rule: ((pred obj1 obj2) (pred obj2 obj3)) -> (pred obj1 obj3)
 
 """
+fact: (is tile1 tile)
+fact: (is tile2 tile)
+fact: (is tile3 tile)
+fact: (is tile4 tile)
+fact: (is tile5 tile)
+fact: (is tile6 tile)
+fact: (is tile7 tile)
+fact: (is tile8 tile)
+fact: (is empty empty)
+
+fact: (address tile1 pos1 pos1)
+fact: (address tile2 pos2 pos1)
+fact: (address tile3 pos3 pos1)
+fact: (address tile4 pos3 pos2)
+fact: (address tile5 pos3 pos3)
+fact: (address tile6 pos2 pos3)
+fact: (address tile7 pos1 pos3)
+fact: (address tile8 pos1 pos2)
+fact: (address empty pos2 pos2)
+
+rule: ((address ?tile1 ?x1 ?y1) (address ?tile2 ?x1 ?y2)) -> (shareX ?tile1 ?tile2)
+rule: ((address ?tile1 ?x1 ?y1) (address ?tile2 ?x2 ?y1)) -> (shareY ?tile1 ?tile2)
+rule: ((shareX ?tile1 ?tile2) (address ?tile1 ?x pos2)) -> (adjacent ?tile1 ?tile2)
+rule: ((shareY ?tile1 ?tile2) (address ?tile1 pos2 ?y)) -> (adjacent ?tile1 ?tile2)
+
+rule: ((adjacent ?tile1 ?tile2)) -> (adjacent ?tile2 ?tile1)
+
+rule: ((address ?piece ?initialX ?initialY) (address ?empty ?targetX ?targetY) (is ?piece tile) (is ?empty empty) (adjacent ?piece ?empty) ) -> (movable ?piece ?initialX ?initialY ?targetX ?targetY)

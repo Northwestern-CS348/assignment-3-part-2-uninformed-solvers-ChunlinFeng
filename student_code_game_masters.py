@@ -34,6 +34,34 @@ class TowerOfHanoiGame(GameMaster):
             A Tuple of Tuples that represent the game state
         """
         ### student code goes here
+
+        # get the number of Pegs
+        askPegNumber = parse_input("fact: (is ?x peg)")
+        numberOfPegs = len(self.kb.kb_ask(askPegNumber))
+
+        # ask disk on a peg
+        StateStatus = []
+        for pegNumber in range(numberOfPegs):
+            questionOnPeg = "fact: (on ?x peg)"
+            targetPeg_str = "peg" + str(pegNumber+1)
+            questionOnPeg = questionOnPeg.replace("peg",targetPeg_str)
+            askPegNumber = parse_input(questionOnPeg)
+            DisksOnPeg = self.kb.kb_ask(askPegNumber)
+
+            # get the disk correct serial number
+            PegStatus = []
+            if DisksOnPeg != False:
+                for ind,item in enumerate(DisksOnPeg):
+                    # example : item.constant = "disk5"
+                    op = item.bindings[0].constant.element[4:]
+                    PegStatus.append(int(op))
+
+                PegStatus.sort()
+
+            # tuple to converter
+            StateStatus.append(tuple(PegStatus)) # !False,append as normal; or append []
+
+        return tuple(StateStatus)
         pass
 
     def makeMove(self, movable_statement):
@@ -53,6 +81,14 @@ class TowerOfHanoiGame(GameMaster):
             None
         """
         ### Student code goes here
+
+        # judge if legal
+        if GameMaster.isMovableLegal(self,movable_statement):
+            # fact above
+
+            # fact top
+            # fact on
+
         pass
 
     def reverseMove(self, movable_statement):

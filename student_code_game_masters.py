@@ -194,6 +194,20 @@ class Puzzle8Game(GameMaster):
             A Tuple of Tuples that represent the game state
         """
         ### Student code goes here
+        result = []
+        for row in range(3):
+            part = []
+            for col in range(3):
+                general_question = "fact: (address ?x col row)"
+                general_question = general_question.replace("col","pos"+str(col+1))
+                general_question = general_question.replace("row","pos"+str(row+1))
+                question = parse_input(general_question)
+                answer = self.kb.kb_ask(question).list_of_bindings[0]
+                answer = answer[0].bindings[0].constant.element
+                if answer == "empty": part.append(-1)
+                else: part.append(int(answer[4:]))
+            result.append(tuple(part))
+        return tuple(result)
         pass
 
     def makeMove(self, movable_statement):
@@ -213,6 +227,7 @@ class Puzzle8Game(GameMaster):
             None
         """
         ### Student code goes here
+
         pass
 
     def reverseMove(self, movable_statement):

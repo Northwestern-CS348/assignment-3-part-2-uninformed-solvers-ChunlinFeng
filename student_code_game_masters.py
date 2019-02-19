@@ -198,7 +198,7 @@ class Puzzle8Game(GameMaster):
         for row in range(3):
             part = []
             for col in range(3):
-                general_question = "fact: (address ?x col row)"
+                general_question = "fact: (addr ?x col row)"
                 general_question = general_question.replace("col","pos"+str(col+1))
                 general_question = general_question.replace("row","pos"+str(row+1))
                 question = parse_input(general_question)
@@ -227,42 +227,30 @@ class Puzzle8Game(GameMaster):
             None
         """
         ### Student code goes here
-        game_state =  self.getGameState()
         if GameMaster.isMovableLegal(self,movable_statement):
             # general infomation
-            movable_tile = movable_statement.terms[0].term.element
-            from_x = movable_statement.terms[1].term.element
-            from_y = movable_statement.terms[2].term.element
-            to_x = movable_statement.terms[3].term.element
-            to_y = movable_statement.terms[4].term.element
+            movable_tile = str(movable_statement.terms[0].term.element)
+            from_x = str(movable_statement.terms[1].term.element)
+            from_y = str(movable_statement.terms[2].term.element)
+            to_x = str(movable_statement.terms[3].term.element)
+            to_y = str(movable_statement.terms[4].term.element)
 
             # retract fact
-            fact = "fact: (address tile pos_x pos_y)"
-            fact = fact.replace("tile",movable_tile)
-            fact = fact.replace("pos_x", from_x)
-            fact = fact.replace("pos_y", from_y)
+            fact = "fact: (addr "+ movable_tile + " "+ from_x +" "+from_y+")"
             self.kb.kb_retract(parse_input(fact))
 
-            fact = "fact: (address tile pos_x pos_y)"
-            fact = fact.replace("tile","empty")
-            fact = fact.replace("pos_x", to_x)
-            fact = fact.replace("pos_y", to_y)
+            fact = "fact: (addr empty " + to_x+ " "+ to_y +")"
             self.kb.kb_retract(parse_input(fact))
 
             # assert fact
-            fact = "fact: (address tile pos_x pos_y)"
-            fact = fact.replace("tile", movable_tile)
-            fact = fact.replace("pos_x", to_x)
-            fact = fact.replace("pos_y", to_y)
+            fact = "fact: (addr "+movable_tile + " "+ to_x +" "+to_y+")"
             self.kb.kb_assert(parse_input(fact))
 
-            fact = "fact: (address tile pos_x pos_y)"
-            fact = fact.replace("tile", "empty")
-            fact = fact.replace("pos_x", from_x)
-            fact = fact.replace("pos_y", from_y)
+            fact = "fact: (addr empty " + from_x+ " "+from_y +")"
             self.kb.kb_assert(parse_input(fact))
 
-        pass
+
+
 
     def reverseMove(self, movable_statement):
         """

@@ -22,8 +22,7 @@ class SolverDFS(UninformedSolver):
         # initial children
         self.currentState.children = self.gm.getMovables()
         # judge initial condition
-        if self.gm.isWon() and self.currentState.state == self.victoryCondition:
-            return True
+        if self.currentState.state == self.victoryCondition and self.gm.isWon(): return True;
         # start solver
         continue_flag = 1 # already find the next state falg = 0, else = 1
         while continue_flag == 1:
@@ -71,7 +70,6 @@ class SolverDFS(UninformedSolver):
 
             else:
                 return False
-
 
 
 

@@ -42,9 +42,11 @@ class TowerOfHanoiGame(GameMaster):
         # ask disk on a peg
         StateStatus = []
         for pegNumber in range(numberOfPegs):
+            # construct the question
             questionOnPeg = "fact: (on ?x peg)"
             targetPeg_str = "peg" + str(pegNumber+1)
             questionOnPeg = questionOnPeg.replace("peg",targetPeg_str)
+
             askPegNumber = parse_input(questionOnPeg)
             DisksOnPeg = self.kb.kb_ask(askPegNumber)
 
@@ -84,10 +86,66 @@ class TowerOfHanoiGame(GameMaster):
 
         # judge if legal
         if GameMaster.isMovableLegal(self,movable_statement):
-            # fact above
+            ### ge-information
+            movable_disk = movable_statement.terms[0]
+            from_where = movable_statement.terms[1]
+            to_where = movable_statement.terms[2]
+            Game_status = self.getGameState()
 
-            # fact top
-            # fact on
+            #### get the one under movable
+            curr_peg = int(from_where.term.element[3:])
+            curr_peg_state = Game_status[curr_peg-1] # initial peg num is 1
+
+            if len(curr_peg_state) < 2: next_top = "base" + str(curr_peg);
+            else: next_top = "disk" + str(curr_peg_state[1]);
+
+            ### get the top on target_peg
+            target_peg = int(to_where.term.element[3:])
+            target_peg_state = Game_status[target_peg-1] # initial peg num is 1
+            if len(target_peg_state) < 1: target_top = "base" + str(target_peg);
+            else: target_top = "disk" + str(target_peg_state[0]);
+
+
+            ## fact above
+             # construct the question
+            disk_str = str(movable_disk)
+            questionAbove = "fact: (above disk ?x)".replace("disk",disk_str)
+
+             # ask
+            askPegNumber = parse_input(questionAbove)
+            statement_matched = self.kb.kb_ask(askPegNumber)
+
+             # retract Above fact
+            for ind,item in statement_matched.list_of_bindings:
+                fact = item[0]
+                if fact in self.kb.facts:
+                    self.kb.kb_retract(fact)
+
+             # retract 2 original tops
+            del_fact1 = parse_input("fact: (top " + str(movable_disk) + " " + str(from_where) + ")")
+            del_fact2 = parse_input("fact: (top " + str(target_top) + " " + str(to_where) + ")")
+            self.kb.kb_retract(del_fact1)
+            self.kb.kb_retract(del_fact2)
+
+             # add new Above
+            general_fact = "fact: (above disk_x disk_y)"
+            general_fact = general_fact.replace("disk_x", disk_str)
+            general_fact = general_fact.replace("disk_y", target_top)
+            new_fact = parse_input(general_fact)
+            self.kb.kb_assert(new_fact)
+
+            ## fact top
+            general_fact = "fact: (top disk peg)"
+            general_fact = general_fact.replace("disk",next_top)
+            general_fact = general_fact.replace("peg", str(from_where))
+            new_fact = parse_input(general_fact)
+            self.kb.kb_assert(new_fact)
+
+            general_fact = "fact: (top disk peg)"
+            general_fact = general_fact.replace("disk",str(movable_disk))
+            general_fact = general_fact.replace("peg", str(to_where))
+            new_fact = parse_input(general_fact)
+            self.kb.kb_assert(new_fact)
 
         pass
 

@@ -43,6 +43,6 @@ rule: ((address ?tile1 ?x1 ?y1) (address ?tile2 ?x2 ?y1)) -> (shareY ?tile1 ?til
 rule: ((shareX ?tile1 ?tile2) (address ?tile1 ?x pos2)) -> (adjacent ?tile1 ?tile2)
 rule: ((shareY ?tile1 ?tile2) (address ?tile1 pos2 ?y)) -> (adjacent ?tile1 ?tile2)
 
-rule: ((adjacent ?tile1 ?tile2)) -> (adjacent ?tile2 ?tile1)
-
 rule: ((address ?piece ?initialX ?initialY) (address ?empty ?targetX ?targetY) (is ?piece tile) (is ?empty empty) (adjacent ?piece ?empty) ) -> (movable ?piece ?initialX ?initialY ?targetX ?targetY)
+
+rule: ((address ?piece ?initialX ?initialY) (address ?empty ?targetX ?targetY) (is ?piece tile) (is ?empty empty) (adjacent ?empty ?piece) ) -> (movable ?piece ?initialX ?initialY ?targetX ?targetY)

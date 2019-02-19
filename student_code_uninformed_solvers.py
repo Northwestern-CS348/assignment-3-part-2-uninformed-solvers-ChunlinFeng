@@ -63,7 +63,6 @@ class SolverDFS(UninformedSolver):
 
                 else:
                     self.gm.reverseMove(current_move)
-                    self.currentState.nextChildToVisit += 1
 
             # need to jump to parent states
             elif self.currentState.depth != 0:

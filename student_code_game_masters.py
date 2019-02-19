@@ -227,6 +227,40 @@ class Puzzle8Game(GameMaster):
             None
         """
         ### Student code goes here
+        game_state =  self.getGameState()
+        if GameMaster.isMovableLegal(self,movable_statement):
+            # general infomation
+            movable_tile = movable_statement.terms[0].term.element
+            from_x = movable_statement.terms[1].term.element
+            from_y = movable_statement.terms[2].term.element
+            to_x = movable_statement.terms[3].term.element
+            to_y = movable_statement.terms[4].term.element
+
+            # retract fact
+            fact = "fact: (address tile pos_x pos_y)"
+            fact = fact.replace("tile",movable_tile)
+            fact = fact.replace("pos_x", from_x)
+            fact = fact.replace("pos_y", from_y)
+            self.kb.kb_retract(parse_input(fact))
+
+            fact = "fact: (address tile pos_x pos_y)"
+            fact = fact.replace("tile","empty")
+            fact = fact.replace("pos_x", to_x)
+            fact = fact.replace("pos_y", to_y)
+            self.kb.kb_retract(parse_input(fact))
+
+            # assert fact
+            fact = "fact: (address tile pos_x pos_y)"
+            fact = fact.replace("tile", movable_tile)
+            fact = fact.replace("pos_x", to_x)
+            fact = fact.replace("pos_y", to_y)
+            self.kb.kb_assert(parse_input(fact))
+
+            fact = "fact: (address tile pos_x pos_y)"
+            fact = fact.replace("tile", "empty")
+            fact = fact.replace("pos_x", from_x)
+            fact = fact.replace("pos_y", from_y)
+            self.kb.kb_assert(parse_input(fact))
 
         pass
 

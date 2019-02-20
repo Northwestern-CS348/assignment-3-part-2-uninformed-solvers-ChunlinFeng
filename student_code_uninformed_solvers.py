@@ -45,7 +45,7 @@ class SolverDFS(UninformedSolver):
                     if over the length of currentState.children then break
                     currentState ready for updating
                     '''
-                    self.currentState.nextChildToVisit += 1
+                    #self.currentState.nextChildToVisit += 1
 
                     # fulfill the next_state
                     self.visited[next_state] = True; # add into the lib
@@ -91,4 +91,78 @@ class SolverBFS(UninformedSolver):
             True if the desired solution state is reached, False otherwise
         """
         ### Student code goes here
-        return True
+
+
+        # judge initial condition ?Win??
+        if self.currentState.state == self.victoryCondition and self.gm.isWon(): return True;
+        # initial children
+        self.currentState.children = self.gm.getMovables()
+
+        '''if current state is initial state, then create a list for storage'''
+        if self.currentState.depth == 0:
+            self.visited["SerialExplore"] = []
+            self.visited["SerialExplore"].append([self.currentState,self.gm.kb])
+            self.visited["ExploreInd"] = 0
+            self.visited["next_depth"] = []
+        '''judge if the BFS is at the end'''
+        if self.visited["ExploreInd"] >= len(self.visited["SerialExplore"]): return False;
+
+        # start solver
+        continue_flag = 1 # already find the next state falg = 0, else = 1
+        while continue_flag == 1:
+            '''
+            load the current state
+            if the current state is not the initial one, jump to its parent, 
+            and check if we need to explore the next state
+            '''
+
+            ind = self.visited["ExploreInd"]
+            currentState = self.visited["SerialExplore"][ind][0]
+            kb = self.visited["SerialExplore"][ind][1]
+            '''jump to the next unexplored state'''
+            if currentState.nextChildToVisit >= len(currentState.children):
+                self.visited["ExploreInd"] = ind + 1
+                if self.visited["ExploreInd"] >= len(self.visited["SerialExplore"]): return False;
+                ind = self.visited["ExploreInd"]
+                currentState = self.visited["SerialExplore"][ind][0]
+
+            '''update the currentState into Self'''
+            import copy
+
+            self.gm.kb = copy.deepcopy(self.visited["SerialExplore"][ind][1])
+            self.currentState = currentState
+
+
+            '''deeper!'''
+            parent_depth = self.currentState.depth
+            explore_depth = parent_depth + 1  # the depth we need to fully explored
+            move = self.currentState.children[self.currentState.nextChildToVisit]  # this step move
+            self.currentState.nextChildToVisit += 1  # tell parent find the next one
+            # save this condition into the dict
+
+            # make move
+            self.gm.makeMove(move)
+            next_state_depth = self.currentState.depth + 1
+            next_state = self.gm.getGameState()
+            next_state = GameState(next_state, next_state_depth, move)
+
+            if next_state not in self.visited:
+                # full fill the next_state
+                self.visited[next_state] = True  # add to visited-dicitonary
+                '''add the next state'''
+                self.visited["SerialExplore"].append([next_state, self.gm.kb])
+
+                next_state.parent = self.currentState
+                next_state.children = self.gm.getMovables()
+                # swap
+                self.currentState = next_state
+
+                # Win!
+                if self.gm.isWon() and self.currentState.state == self.victoryCondition: return True;
+
+                # stop find
+                continue_flag = 0
+            else:
+                self.currentState = next_state
+
+
